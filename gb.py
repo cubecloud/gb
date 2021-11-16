@@ -12,9 +12,22 @@ from itertools import cycle
 from itertools import combinations
 
 import numpy as np
-__version__ = 0.005
+
+__version__ = 0.006
 
 _FLOAT_PRECISION_ = 1
+
+
+def get_local_timezone_name():
+    if time.daylight:
+        offset_hour = time.altzone / 3600
+    else:
+        offset_hour = time.timezone / 3600
+
+    offset_hour_msg = f"{offset_hour:.0f}"
+    if offset_hour > 0:
+        offset_hour_msg = f"+{offset_hour:.0f}"
+    return f'Etc/GMT{offset_hour_msg}'
 
 
 def pos_cycle(my_list, start_at=None):
@@ -1130,7 +1143,7 @@ class Couch:
             self.genes.update({f'{ix + 1:002d}': bags_nums})
         self.scoring = Shelf(self.bags_configs, self.to_bags_items)
         self.possible_iterations, _ = get_iter_count(self.genes, {})
-        msg = f'Starting GA for searching of the best fill of capacity:\nCapacity: {self.bags_configs}\n' \
+        msg = f'Starting GB for searching of the best fill of capacity:\nCapacity: {self.bags_configs}\n' \
               f'Items weight: {self.to_bags_items}\n'
         msg += f'Total possible iterations: {self.possible_iterations:,}\n'
         msg += f'Total genes qty: {len(self.genes)}'
@@ -1151,7 +1164,7 @@ class Couch:
             one_bag_iter = self.iterations_items[idx] ** 2
             all_bags_iter.append(one_bag_iter)
         self.possible_iterations = reduce(operator.mul, all_bags_iter, 1)
-        msg = f'Starting GA for searching of the best TimePlan.\n'
+        msg = f'Starting GB for searching of the best TimePlan.\n'
         msg += f'Total possible iterations: {self.possible_iterations:,}\n'
         msg += f'Total genes qty: {len(self.genes)}'
         print(msg)
@@ -1697,7 +1710,8 @@ class MegaPopulation:
 
 
 if __name__ == '__main__':
-    timezone = pytz.timezone("Europe/Moscow")
+    timezone = pytz.timezone(get_local_timezone_name())
+
 
     def shelf_test():
         """
