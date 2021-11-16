@@ -1781,5 +1781,8 @@ if __name__ == '__main__':
         pass
 
 
+    # fillbags test
     # shelf_test()
+
+    # timebags test
     timeplan_test()
